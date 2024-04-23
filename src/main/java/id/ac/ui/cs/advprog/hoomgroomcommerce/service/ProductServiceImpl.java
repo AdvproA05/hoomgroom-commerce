@@ -19,30 +19,35 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product createProduct(Product product) {
-        return null;
+        productRepository.create(product);
+        return product;
     }
 
 
     @Override
     public List<Product> findAll() {
-        return null;
+        Iterator<Product> productIterator = productRepository.findAll();
+        List<Product> allProduct = new ArrayList<>();
+        productIterator.forEachRemaining(allProduct::add);
+        return allProduct;
     }
 
 
     @Override
     public Product findById(UUID productId) {
-        return null;
+        return productRepository.findById(productId);
     }
 
 
     @Override
     public Product editProduct(Product editedProduct) {
-        return null;
+        productRepository.edit(editedProduct);
+        return editedProduct;
     }
 
 
     @Override
     public Product deleteProduct(UUID productId) {
-        return null;
+        return productRepository.delete(productId);
     }
 }
