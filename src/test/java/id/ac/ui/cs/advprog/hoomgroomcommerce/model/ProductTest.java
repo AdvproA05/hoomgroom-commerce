@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 
@@ -25,6 +26,10 @@ public class ProductTest {
         this.product.setProductQuantity(50);
         this.product.setProductPrice(50000.0);
         this.product.setProductDiscountPrice(40000.0);
+        ArrayList<String> types = new ArrayList<>();
+        types.add("Furniture");
+        types.add("Living Room");
+        product.setProductType(types);
     }
 
 
@@ -67,5 +72,13 @@ public class ProductTest {
     @Test
     void testGetProductDiscountPrice() {
         assertEquals(40000.0, this.product.getProductDiscountPrice());
+    }
+
+    @Test
+    void testGetProductType() {
+        ArrayList<String> typesTest = new ArrayList<>();
+        typesTest.add("Furniture");
+        typesTest.add("Living Room");
+        assertEquals(typesTest, this.product.getProductType());
     }
 }
