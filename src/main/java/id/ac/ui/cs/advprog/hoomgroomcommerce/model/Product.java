@@ -17,5 +17,14 @@ public class Product {
     private int productQuantity;
     private Double productPrice;
     private Double productDiscountPrice;
+    private ProductState productState;
 
+    public boolean checkAvailability() {
+        return this.productState.checkAvailability();
+    }
+
+    public String printState() {
+        return productState.printState();
+    }
 }
+
