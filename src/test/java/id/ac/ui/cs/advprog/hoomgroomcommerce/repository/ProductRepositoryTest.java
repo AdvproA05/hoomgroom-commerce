@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -41,6 +42,10 @@ public class ProductRepositoryTest {
         product.setProductQuantity(50);
         product.setProductPrice(50000.0);
         product.setProductDiscountPrice(40000.0);
+        ArrayList<String> types = new ArrayList<>();
+        types.add("Furniture");
+        types.add("Living Room");
+        product.setProductType(types);
         productRepository.create(product);
 
 
@@ -54,6 +59,7 @@ public class ProductRepositoryTest {
         assertEquals(product.getProductQuantity(), savedProduct.getProductQuantity());
         assertEquals(product.getProductPrice(), savedProduct.getProductPrice());
         assertEquals(product.getProductDiscountPrice(), savedProduct.getProductDiscountPrice());
+        assertEquals(product.getProductType(),savedProduct.getProductType());
     }
 
 
@@ -74,6 +80,10 @@ public class ProductRepositoryTest {
         product1.setProductQuantity(50);
         product1.setProductPrice(50000.0);
         product1.setProductDiscountPrice(40000.0);
+        ArrayList<String> types1 = new ArrayList<>();
+        types1.add("Furniture");
+        types1.add("Living Room");
+        product1.setProductType(types1);
         productRepository.create(product1);
 
 
@@ -85,6 +95,10 @@ public class ProductRepositoryTest {
         product2.setProductQuantity(30);
         product2.setProductPrice(1000000.0);
         product2.setProductDiscountPrice(900000.0);
+        ArrayList<String> types2 = new ArrayList<>();
+        types2.add("Furniture");
+        types2.add("Dining Room");
+        product2.setProductType(types2);
         productRepository.create(product2);
 
 
@@ -110,6 +124,10 @@ public class ProductRepositoryTest {
         product.setProductQuantity(50);
         product.setProductPrice(50000.0);
         product.setProductDiscountPrice(40000.0);
+        ArrayList<String> types1 = new ArrayList<>();
+        types1.add("Furniture");
+        types1.add("Living Room");
+        product.setProductType(types1);
         productRepository.create(product);
 
 
@@ -121,6 +139,10 @@ public class ProductRepositoryTest {
         editedProduct.setProductQuantity(40);
         editedProduct.setProductPrice(70000.0);
         editedProduct.setProductDiscountPrice(40000.0);
+        ArrayList<String> types2 = new ArrayList<>();
+        types2.add("Furniture");
+        types2.add("Bedroom");
+        product.setProductType(types2);
         productRepository.edit(editedProduct);
 
 
@@ -134,6 +156,7 @@ public class ProductRepositoryTest {
         assertEquals(editedProduct.getProductQuantity(),savedProduct.getProductQuantity());
         assertEquals(editedProduct.getProductPrice(),savedProduct.getProductPrice());
         assertEquals(editedProduct.getProductDiscountPrice(),savedProduct.getProductDiscountPrice());
+        assertEquals(editedProduct.getProductType(),savedProduct.getProductType());
     }
 
 
@@ -147,6 +170,10 @@ public class ProductRepositoryTest {
         product1.setProductQuantity(50);
         product1.setProductPrice(50000.0);
         product1.setProductDiscountPrice(40000.0);
+        ArrayList<String> types1 = new ArrayList<>();
+        types1.add("Furniture");
+        types1.add("Living Room");
+        product1.setProductType(types1);
         productRepository.create(product1);
 
 
@@ -158,6 +185,10 @@ public class ProductRepositoryTest {
         product2.setProductQuantity(40);
         product2.setProductPrice(1000000.0);
         product2.setProductDiscountPrice(900000.0);
+        ArrayList<String> types2 = new ArrayList<>();
+        types2.add("Furniture");
+        types2.add("Dining Room");
+        product2.setProductType(types2);
         productRepository.create(product2);
 
 
@@ -169,6 +200,10 @@ public class ProductRepositoryTest {
         editedProduct.setProductQuantity(40);
         editedProduct.setProductPrice(70000.0);
         editedProduct.setProductDiscountPrice(40000.0);
+        ArrayList<String> types3 = new ArrayList<>();
+        types3.add("Furniture");
+        types3.add("Bedroom");
+        editedProduct.setProductType(types3);
         productRepository.edit(editedProduct);
 
         Iterator<Product> productIterator = productRepository.findAll();
@@ -181,6 +216,7 @@ public class ProductRepositoryTest {
         assertEquals(editedProduct.getProductQuantity(),savedProduct.getProductQuantity());
         assertEquals(editedProduct.getProductPrice(),savedProduct.getProductPrice());
         assertEquals(editedProduct.getProductDiscountPrice(),savedProduct.getProductDiscountPrice());
+        assertEquals(editedProduct.getProductType(),savedProduct.getProductType());
 
         savedProduct = productIterator.next();
         assertEquals(product2.getProductId(),savedProduct.getProductId());
@@ -190,6 +226,7 @@ public class ProductRepositoryTest {
         assertEquals(product2.getProductQuantity(),savedProduct.getProductQuantity());
         assertEquals(product2.getProductPrice(),savedProduct.getProductPrice());
         assertEquals(product2.getProductDiscountPrice(),savedProduct.getProductDiscountPrice());
+        assertEquals(product2.getProductType(),savedProduct.getProductType());
     }
 
     @Test
@@ -202,7 +239,10 @@ public class ProductRepositoryTest {
         editedProduct.setProductQuantity(40);
         editedProduct.setProductPrice(70000.0);
         editedProduct.setProductDiscountPrice(40000.0);
-
+        ArrayList<String> types3 = new ArrayList<>();
+        types3.add("Furniture");
+        types3.add("Bedroom");
+        editedProduct.setProductType(types3);
         assertThrows(IllegalArgumentException.class, () ->
                 productRepository.edit(editedProduct));
     }
@@ -216,7 +256,10 @@ public class ProductRepositoryTest {
         editedProduct.setProductQuantity(40);
         editedProduct.setProductPrice(70000.0);
         editedProduct.setProductDiscountPrice(40000.0);
-
+        ArrayList<String> types3 = new ArrayList<>();
+        types3.add("Furniture");
+        types3.add("Bedroom");
+        editedProduct.setProductType(types3);
         assertThrows(IllegalArgumentException.class, () ->
                 productRepository.edit(editedProduct));
     }
@@ -232,6 +275,10 @@ public class ProductRepositoryTest {
         product.setProductPrice(70000.0);
         product.setProductDiscountPrice(40000.0);
         productRepository.create(product);
+        ArrayList<String> types3 = new ArrayList<>();
+        types3.add("Furniture");
+        types3.add("Bedroom");
+        product.setProductType(types3);
 
         Product deletedProduct = productRepository.delete(product.getProductId());
         assertEquals(product, deletedProduct);
@@ -251,6 +298,10 @@ public class ProductRepositoryTest {
         product1.setProductQuantity(50);
         product1.setProductPrice(50000.0);
         product1.setProductDiscountPrice(40000.0);
+        ArrayList<String> types1 = new ArrayList<>();
+        types1.add("Furniture");
+        types1.add("Living Room");
+        product1.setProductType(types1);
         productRepository.create(product1);
 
 
@@ -262,6 +313,10 @@ public class ProductRepositoryTest {
         product2.setProductQuantity(40);
         product2.setProductPrice(1000000.0);
         product2.setProductDiscountPrice(900000.0);
+        ArrayList<String> types2 = new ArrayList<>();
+        types2.add("Furniture");
+        types2.add("Dining Room");
+        product2.setProductType(types2);
         productRepository.create(product2);
 
         Product deletedProduct = productRepository.delete(product1.getProductId());
@@ -277,6 +332,7 @@ public class ProductRepositoryTest {
         assertEquals(product2.getProductQuantity(),savedProduct.getProductQuantity());
         assertEquals(product2.getProductPrice(),savedProduct.getProductPrice());
         assertEquals(product2.getProductDiscountPrice(),savedProduct.getProductDiscountPrice());
+        assertEquals(product2.getProductType(),savedProduct.getProductType());
     }
 
     @Test
@@ -302,6 +358,10 @@ public class ProductRepositoryTest {
         product.setProductQuantity(50);
         product.setProductPrice(50000.0);
         product.setProductDiscountPrice(40000.0);
+        ArrayList<String> types1 = new ArrayList<>();
+        types1.add("Furniture");
+        types1.add("Living Room");
+        product.setProductType(types1);
         productRepository.create(product);
 
         Product foundProduct = productRepository.findById(productId);
@@ -314,6 +374,10 @@ public class ProductRepositoryTest {
         assertEquals(50, foundProduct.getProductQuantity());
         assertEquals(50000.0, foundProduct.getProductPrice());
         assertEquals(40000.0, foundProduct.getProductDiscountPrice());
+        ArrayList<String> types2 = new ArrayList<>();
+        types2.add("Furniture");
+        types2.add("Living Room");
+        assertEquals(types2,foundProduct.getProductType());
     }
 
     @Test
