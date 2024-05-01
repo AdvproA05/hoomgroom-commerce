@@ -1,12 +1,14 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.controller;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class HomepageController {
+
   @GetMapping("/")
-  public String homepage() {
-    return "homepage";
+  public ResponseEntity<String> homepage() {
+    return ResponseEntity.ok("homepage");
   }
 }

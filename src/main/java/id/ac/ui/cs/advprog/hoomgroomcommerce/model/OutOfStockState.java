@@ -8,6 +8,6 @@ public class OutOfStockState implements ProductState{
 
     @Override
     public String printState() {
-        return "Product is Out  Of Stock.";
+        return "Product is Out Of Stock.";
     }
 }
