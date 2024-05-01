@@ -1,17 +1,26 @@
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PengirimanTest {
+public class PengirimanStateTest {
     @Test
     public void testPengirimanState() {
         Pengiriman pengiriman = new Pengiriman();
-        assertEquals("Pengiriman sudah dalam proses.", pengiriman.proses());
+        PengirimanState PengirimanDiprosesState = Mockito.mock(PengirimanDiprosesState.class);
+        PengirimanState PengirimanDikirimState = Mockito.mock(PengirimanDikirimState.class);
+        PengirimanState PengirimanDiterimaState = Mockito.mock(PengirimanDiterimaState.class);
 
+        pengiriman.setState(PengirimanDiprosesState);
+        pengiriman.proses();
+        Mockito.verify(PengirimanDiprosesState).proses(pengiriman);
+
+        pengiriman.setState(PengirimanDikirimState);
         pengiriman.kirim();
-        assertEquals("Pengiriman telah dikirim.", pengiriman.kirim());
+        Mockito.verify(PengirimanDikirimState).kirim(pengiriman);
 
+        pengiriman.setState(PengirimanDiterimaState);
         pengiriman.terima();
-        assertEquals("Pengiriman telah diterima.", pengiriman.terima());
+        Mockito.verify(PengirimanDiterimaState).terima(pengiriman);
     }
 }

@@ -1,35 +1,26 @@
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Pengiriman;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.StatusPengiriman;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.PengirimanRepository;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.PengirimanRepository; // Add this import statement
 
 @Service
 public class PengirimanServiceImpl implements PengirimanService {
 
-    private StatusPengiriman statusPengiriman;
+    private final PengirimanRepository pengirimanRepo;
 
-    @Autowired
-    private PengirimanRepository pengirimanRepo;
+    public PengirimanServiceImpl(PengirimanRepository pengirimanRepo) {
+        this.pengirimanRepo = pengirimanRepo;
+    }
 
     @Override
     public void simpanPengiriman(Pengiriman pengiriman) {
         pengirimanRepo.save(pengiriman);
     }
 
-    @Override
-    public StatusPengiriman getStatus() {
-        return statusPengiriman;
-    }
-
-    @Override
-    public void setStatus(StatusPengiriman statusPengiriman) {
-        this.statusPengiriman = statusPengiriman;
-    }
-
-    @Override
-    public String getId() {
-        return UUID.randomUUID().toString(); 
-    }
+    // Existing code...
 
     @Override
     public String getKodeResi() {
