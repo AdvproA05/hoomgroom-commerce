@@ -16,8 +16,20 @@ public class PengirimanController {
     private PengirimanService pengirimanService;
 
     @PutMapping("/updateStatus/{id}/{newStatus}")
-    public void updateStatusPengiriman(@PathVariable("id") String id, @PathVariable("newStatus") StatusPengiriman newStatus) {
-        pengirimanService.updateStatusPengiriman(id, newStatus);
+    public void updateStatusPengiriman(@PathVariable("id") String id, @PathVariable("newStatus") String newStatus) {
+        switch (newStatus.toUpperCase()) {
+            case "DIPROSES":
+                pengirimanService.proses(id);
+                break;
+            case "DIKIRIM":
+                pengirimanService.kirim(id);
+                break;
+            case "DITERIMA":
+                pengirimanService.terima(id);
+                break;
+            default:
+                throw new IllegalArgumentException("Status pengiriman tidak valid: " + newStatus);
+        }
     }
 
     @PutMapping("/jenisTransportasi/{id}")
@@ -30,5 +42,3 @@ public class PengirimanController {
         pengirimanService.finalisasiPesanan(pengirimanId);
     }
 }
-
-

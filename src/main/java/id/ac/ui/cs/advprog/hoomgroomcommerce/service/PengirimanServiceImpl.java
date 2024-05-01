@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.hoomgroomcommerce.service;
 
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Pengiriman;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanState;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.PengirimanRepository;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanDiprosesState;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanDikirimState;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanDiterimaState;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class PengirimanServiceImpl implements PengirimanService {
     private Pengiriman pengiriman;
 
-    public PengirimanServiceImpl() {
+    public PengirimanServiceImpl(PengirimanRepository pengirimanRepository) {
         this.pengiriman = new Pengiriman();
     }
 
@@ -42,17 +43,17 @@ public class PengirimanServiceImpl implements PengirimanService {
 
     @Override
     public void proses(String id) {
-        pengiriman.setState(new DiprosesState());
+        pengiriman.setState(new PengirimanDiprosesState());
     }
 
     @Override
     public void kirim(String id) {
-        pengiriman.setState(new DikirimState());
+        pengiriman.setState(new PengirimanDikirimState());
     }
 
     @Override
     public void terima(String id) {
-        pengiriman.setState(new DiterimaState());
+        pengiriman.setState(new PengirimanDiterimaState());
     }
 
     @Override

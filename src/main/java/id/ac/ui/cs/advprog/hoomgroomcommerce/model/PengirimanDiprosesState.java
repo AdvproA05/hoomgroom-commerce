@@ -1,6 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
 
-public class DiprosesState implements PengirimanState {
+public class PengirimanDiprosesState implements PengirimanState {
     @Override
     public void proses(Pengiriman pengiriman) {
         System.out.println("Pengiriman sedang diproses");
@@ -9,7 +9,7 @@ public class DiprosesState implements PengirimanState {
     @Override
     public void kirim(Pengiriman pengiriman) {
         System.out.println("Pengiriman dikirim");
-        pengiriman.setState(new DikirimState());
+        pengiriman.setState(new PengirimanDikirimState());
     }
 
     @Override

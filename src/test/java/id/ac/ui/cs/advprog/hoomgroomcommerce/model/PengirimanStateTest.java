@@ -1,7 +1,7 @@
+package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PengirimanStateTest {
     @Test
