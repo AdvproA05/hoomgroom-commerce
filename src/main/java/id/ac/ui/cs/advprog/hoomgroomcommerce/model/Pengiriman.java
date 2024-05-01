@@ -1,7 +1,9 @@
+package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
+
 public class Pengiriman {
-    private PengirimanState state;
     private String id;
     private String kodeResi;
+    private PengirimanState state;
 
     public Pengiriman() {
         this.state = new PengirimanDiprosesState();
@@ -29,6 +31,10 @@ public class Pengiriman {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public PengirimanState getState(){
+        return state;
     }
 
     public String getKodeResi() {

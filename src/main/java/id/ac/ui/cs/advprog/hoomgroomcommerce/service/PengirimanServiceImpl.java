@@ -1,38 +1,67 @@
-import java.util.UUID;
-import org.springframework.stereotype.Service;
+package id.ac.ui.cs.advprog.hoomgroomcommerce.service;
 
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Pengiriman;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.model.StatusPengiriman;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.PengirimanRepository;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.PengirimanRepository; // Add this import statement
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanState;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanDiprosesState;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanDikirimState;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanDiterimaState;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PengirimanServiceImpl implements PengirimanService {
+    private Pengiriman pengiriman;
 
-    private final PengirimanRepository pengirimanRepo;
-
-    public PengirimanServiceImpl(PengirimanRepository pengirimanRepo) {
-        this.pengirimanRepo = pengirimanRepo;
+    public PengirimanServiceImpl() {
+        this.pengiriman = new Pengiriman();
     }
 
     @Override
     public void simpanPengiriman(Pengiriman pengiriman) {
-        pengirimanRepo.save(pengiriman);
+        this.pengiriman = pengiriman;
     }
 
-    // Existing code...
+    @Override
+    public PengirimanState getStatus() {
+        return pengiriman.getState();
+    }
+
+    @Override
+    public void setStatus(PengirimanState statusPengiriman) {
+        pengiriman.setState(statusPengiriman);
+    }
+
+    @Override
+    public String getId() {
+        return pengiriman.getId();
+    }
 
     @Override
     public String getKodeResi() {
-        return generateKodeResi(); 
+        return pengiriman.getKodeResi();
     }
 
-    private String generateKodeResi() {
-        StringBuilder kodeResiBuilder = new StringBuilder();
-        for (int i = 0; i < 8; i++) {
-            char randomChar = (char) ('A' + Math.random() * ('Z' - 'A' + 1)); 
-            kodeResiBuilder.append(randomChar);
-        }
-        return kodeResiBuilder.toString();
+    @Override
+    public void proses(String id) {
+        pengiriman.setState(new DiprosesState());
+    }
+
+    @Override
+    public void kirim(String id) {
+        pengiriman.setState(new DikirimState());
+    }
+
+    @Override
+    public void terima(String id) {
+        pengiriman.setState(new DiterimaState());
+    }
+
+    @Override
+    public void jenisTransportasi(String id) {
+        // implementasi detail
+    }
+
+    @Override
+    public void finalisasiPesanan(String pengirimanId) {
+        // implementasi detail
     }
 }
