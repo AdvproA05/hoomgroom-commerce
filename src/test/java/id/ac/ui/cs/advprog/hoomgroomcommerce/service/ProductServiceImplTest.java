@@ -10,10 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
         import static org.mockito.Mockito.*;
@@ -52,10 +49,10 @@ public class ProductServiceImplTest {
                 50000.0,
                 40000.0);
 
-        when(productRepository.create(product)).thenReturn(product);
+        when(productRepository.save(product)).thenReturn(product);
         Product savedProduct = productServiceImpl.createProduct(product);
         assertEquals(product.getProductId(), savedProduct.getProductId());
-        verify(productRepository, times(1)).create(product);
+        verify(productRepository, times(1)).save(product);
     }
 
     @Test
@@ -83,8 +80,7 @@ public class ProductServiceImplTest {
         productList.add(product2);
 
         Iterator<Product> iterator = productList.iterator();
-        when(productRepository.findAll()).thenReturn(iterator);
-
+        when(productRepository.findAll()).thenReturn(productList);
         List<Product> result = productServiceImpl.findAll();
         assertEquals(productList.size(), result.size());
         for (int i = 0; i < productList.size(); i++) {
@@ -104,10 +100,8 @@ public class ProductServiceImplTest {
                 50000.0,
                 40000.0);
 
-        when(productRepository.findById(product.getProductId())).thenReturn(product);
-
+        when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
         Product foundProduct = productServiceImpl.findById(product.getProductId());
-
         assertEquals(product, foundProduct);
         verify(productRepository, times(1)).findById(product.getProductId());
     }
@@ -123,12 +117,10 @@ public class ProductServiceImplTest {
                 50000.0,
                 40000.0);
 
-        when(productRepository.edit(product)).thenReturn(product);
-
+        when(productRepository.save(product)).thenReturn(product);
         Product editedProduct = productServiceImpl.editProduct(product);
-
         assertEquals(product, editedProduct);
-        verify(productRepository, times(1)).edit(product);
+        verify(productRepository, times(1)).save(product);
     }
 
     @Test
@@ -142,9 +134,8 @@ public class ProductServiceImplTest {
                 50000.0,
                 40000.0);
 
-        when(productRepository.delete(product.getProductId())).thenReturn(product);
-        Product deletedProduct = productServiceImpl.deleteProduct(product.getProductId());
-        assertEquals(product, deletedProduct);
-        verify(productRepository, times(1)).delete(product.getProductId());
+        doNothing().when(productRepository).deleteById(product.getProductId());
+        productServiceImpl.deleteProduct(product.getProductId());
+        verify(productRepository, times(1)).deleteById(product.getProductId());
     }
 }

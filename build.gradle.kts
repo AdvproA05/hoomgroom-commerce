@@ -30,6 +30,10 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("org.hibernate:hibernate-core:5.4.27.Final")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	testImplementation("com.h2database:h2")
+	testImplementation("org.testcontainers:postgresql")
 }
 
 tasks.register<Test>("unitTest") {

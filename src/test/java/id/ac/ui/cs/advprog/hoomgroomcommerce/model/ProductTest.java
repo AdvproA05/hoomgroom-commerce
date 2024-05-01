@@ -30,7 +30,9 @@ public class ProductTest {
         types.add("Furniture");
         types.add("Living Room");
         product.setProductType(types);
+        product.setProductState(new AvailableState()); // set a ProductState
     }
+
 
 
     @Test
@@ -80,5 +82,10 @@ public class ProductTest {
         typesTest.add("Furniture");
         typesTest.add("Living Room");
         assertEquals(typesTest, this.product.getProductType());
+    }
+
+    @Test
+    void testGetProductState() {
+        assertInstanceOf(AvailableState.class, this.product.getProductState());
     }
 }

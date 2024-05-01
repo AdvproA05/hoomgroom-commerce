@@ -10,9 +10,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -38,10 +41,12 @@ public class ProductControllerTest {
     public void testCreateProduct() throws Exception {
         when(productService.createProduct(any(Product.class))).thenReturn(new Product());
 
-        mockMvc.perform(post("/products")
+        MockHttpServletResponse response = mockMvc.perform(post("/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"productName\":\"Test Product\",\"productDescription\":\"Test Description\",\"productImage\":\"Test Image\",\"productPrice\":100.0,\"productDiscountPrice\":90.0}"))
-                .andExpect(status().isOk());
+                .andReturn().getResponse();
+
+        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
     }
 
     @Test
@@ -49,19 +54,22 @@ public class ProductControllerTest {
         when(productService.findById(any(UUID.class))).thenReturn(new Product());
         when(productService.editProduct(any(Product.class))).thenReturn(new Product());
 
-        mockMvc.perform(put("/products/" + UUID.randomUUID().toString())
+        MockHttpServletResponse response = mockMvc.perform(put("/products/" + UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"productName\":\"Test Product\",\"productDescription\":\"Test Description\",\"productImage\":\"Test Image\",\"productPrice\":100.0,\"productDiscountPrice\":90.0}"))
-                .andExpect(status().isOk());
+                .andReturn().getResponse();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
     }
 
     @Test
     public void testDeleteProduct() throws Exception {
         when(productService.findById(any(UUID.class))).thenReturn(new Product());
-        when(productService.deleteProduct(any(UUID.class))).thenReturn(new Product());
 
-        mockMvc.perform(delete("/products/" + UUID.randomUUID().toString())
+        MockHttpServletResponse response = mockMvc.perform(delete("/products/" + UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andReturn().getResponse();
+
+        assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
     }
 }
