@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.service;
 
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.AvailableState;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Product;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,14 @@ public class DiscountSearchStrategyTest {
         product.setProductQuantity(productQuantity);
         product.setProductPrice(productPrice);
         product.setProductDiscountPrice(productDiscountPrice);
+        ArrayList<String> types = new ArrayList<>();
+        types.add("Furniture");
+        types.add("Living Room");
+        product.setProductType(types);
+        product.setProductState(new AvailableState());
         return product;
+
+
     }
 
     @Test
