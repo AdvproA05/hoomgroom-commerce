@@ -1,13 +1,17 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.service;
 
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Product;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.ProductRepository;
+
 import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
     Product createProduct(Product product);
     List<Product> findAll();
+    List<Product> findByFilter(SearchStrategy productStrategy);
     Product findById(UUID productId);
     Product editProduct(Product editedProduct);
     void deleteProduct(UUID productId);
+
 }

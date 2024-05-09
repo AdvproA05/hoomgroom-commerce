@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class DiscountSearchStrategy implements SearchStrategy {
+
     private ProductRepository productRepository;
 
     public DiscountSearchStrategy(ProductRepository productRepository){

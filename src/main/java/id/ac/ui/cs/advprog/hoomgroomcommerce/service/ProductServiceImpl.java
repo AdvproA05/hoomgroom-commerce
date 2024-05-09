@@ -11,6 +11,8 @@ import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
+
     @Autowired
     private ProductRepository productRepository;
 
@@ -30,6 +32,10 @@ public class ProductServiceImpl implements ProductService {
         return product.orElse(null);
     }
 
+    public List<Product> findByFilter(SearchStrategy productStrategy){
+        return productStrategy.filterProducts();
+    }
+
     @Override
     public Product editProduct(Product editedProduct) {
         return productRepository.save(editedProduct);
@@ -39,4 +45,5 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(UUID productId) {
         productRepository.deleteById(productId);
     }
+
 }
