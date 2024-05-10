@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import java.util.concurrent.CompletableFuture;
 
 import java.util.UUID;
 
@@ -16,17 +18,19 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Async
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    public CompletableFuture<ResponseEntity<Product>> createProduct(@RequestBody Product product) {
         Product createdProduct = productService.createProduct(product);
-        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
+        return CompletableFuture.completedFuture(new ResponseEntity<>(createdProduct, HttpStatus.CREATED));
     }
 
+    @Async
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable UUID id, @RequestBody Product product) {
+    public CompletableFuture<ResponseEntity<Product>> updateProduct(@PathVariable UUID id, @RequestBody Product product) {
         Product existingProduct = productService.findById(id);
         if (existingProduct == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         }
         existingProduct.setProductName(product.getProductName());
         existingProduct.setProductDescription(product.getProductDescription());
@@ -34,13 +38,13 @@ public class ProductController {
         existingProduct.setProductPrice(product.getProductPrice());
         existingProduct.setProductDiscountPrice(product.getProductDiscountPrice());
         Product updatedProduct = productService.editProduct(existingProduct);
-        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+        return CompletableFuture.completedFuture(new ResponseEntity<>(updatedProduct, HttpStatus.OK));
     }
 
+    @Async
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
+    public CompletableFuture<ResponseEntity<Void>> deleteProduct(@PathVariable UUID id) {
         productService.deleteProduct(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 }
-
