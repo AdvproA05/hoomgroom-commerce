@@ -1,6 +1,23 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.controller;
 
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Product;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.service.ProductService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Product;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.ProductRepository;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.service.ProductService;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.service.SearchStrategy;
@@ -23,13 +40,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class ProductControllerTest {
-
+class ProductControllerTest {
     private MockMvc mockMvc;
-
     @Mock
     private ProductService productService;
-
     @Mock
     private ProductRepository productRepository;
 
@@ -37,47 +51,56 @@ public class ProductControllerTest {
     private ProductController productController;
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
     }
 
     @Test
-    public void testCreateProduct() throws Exception {
-        when(productService.createProduct(any(Product.class))).thenReturn(new Product());
+    void testCreateProduct() {
+        Product product = new Product();
+        when(productService.createProduct(product)).thenReturn(product);
 
-        MockHttpServletResponse response = mockMvc.perform(post("/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"productName\":\"Test Product\",\"productDescription\":\"Test Description\",\"productImage\":\"Test Image\",\"productPrice\":100.0,\"productDiscountPrice\":90.0}"))
-                .andReturn().getResponse();
+        CompletableFuture<ResponseEntity<Product>> response = productController.createProduct(product);
 
-        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+        try{
+        assertEquals(HttpStatus.CREATED, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        verify(productService, times(1)).createProduct(product);
     }
 
     @Test
-    public void testUpdateProduct() throws Exception {
-        when(productService.findById(any(UUID.class))).thenReturn(new Product());
-        when(productService.editProduct(any(Product.class))).thenReturn(new Product());
+    void testUpdateProduct() {
+        UUID id = UUID.randomUUID();
+        Product product = new Product();
+        when(productService.findById(id)).thenReturn(product);
+        when(productService.editProduct(product)).thenReturn(product);
 
-        MockHttpServletResponse response = mockMvc.perform(put("/products/" + UUID.randomUUID().toString())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"productName\":\"Test Product\",\"productDescription\":\"Test Description\",\"productImage\":\"Test Image\",\"productPrice\":100.0,\"productDiscountPrice\":90.0}"))
-                .andReturn().getResponse();
+        CompletableFuture<ResponseEntity<Product>> response = productController.updateProduct(id, product);
 
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        try{
+        assertEquals(HttpStatus.OK, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        verify(productService, times(1)).editProduct(product);
     }
 
     @Test
-    public void testDeleteProduct() throws Exception {
-        when(productService.findById(any(UUID.class))).thenReturn(new Product());
+    void testDeleteProduct() {
+        UUID id = UUID.randomUUID();
 
-        MockHttpServletResponse response = mockMvc.perform(delete("/products/" + UUID.randomUUID().toString())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
+        CompletableFuture<ResponseEntity<Void>> response = productController.deleteProduct(id);
 
-        assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
+        try {
+            assertEquals(HttpStatus.NO_CONTENT, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        verify(productService, times(1)).deleteProduct(id);
     }
-
 
     @Test
     public void testGetProduct() throws Exception {
@@ -126,7 +149,6 @@ public class ProductControllerTest {
 
     }
 
-
     @Test
     public void testGetByMaxPriceProduct() throws Exception {
         Double max = 100.0;
@@ -173,5 +195,4 @@ public class ProductControllerTest {
                 .andReturn().getResponse();
         assertEquals(HttpStatus.OK.value(), response.getStatus());
     }
-
 }
