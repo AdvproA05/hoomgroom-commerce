@@ -1,5 +1,5 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;

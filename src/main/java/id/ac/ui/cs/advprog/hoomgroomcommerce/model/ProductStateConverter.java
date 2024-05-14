@@ -1,7 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class ProductStateConverter implements AttributeConverter<ProductState, String> {
