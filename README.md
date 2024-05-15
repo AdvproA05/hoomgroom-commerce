@@ -13,3 +13,8 @@ HoomGroom-Commerce adalah bagian dari repository backend untuk aplikasi HoomGroo
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
 ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+
+## profilling
+products
+![image](https://github.com/HoomGroomA-5/hoomgroom-commerce/assets/110030938/3fea2dd7-d8be-4a70-b688-dcdf53920b1e)
+
