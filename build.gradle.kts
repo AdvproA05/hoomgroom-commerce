@@ -34,6 +34,8 @@ dependencies {
 	testImplementation("com.h2database:h2")
 	testImplementation("org.testcontainers:postgresql")
 	implementation("org.postgresql:postgresql:42.2.5")
+	implementation("io.micrometer:micrometer-registry-prometheus")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 }
 
 tasks.register<Test>("unitTest") {
