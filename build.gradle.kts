@@ -24,17 +24,22 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    compileOnly("org.projectlombok:lombok")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-	implementation("org.hibernate:hibernate-core:5.4.27.Final")
+  	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation ("org.postgresql:postgresql")
+	compileOnly("org.projectlombok:lombok")
+  	developmentOnly("org.springframework.boot:spring-boot-devtools")
+  	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+  	annotationProcessor("org.projectlombok:lombok")
+  	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.security:spring-security-test")
+	implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	testImplementation("com.h2database:h2")
-	testImplementation("org.testcontainers:postgresql")
-}
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
+	runtimeOnly("org.postgresql:postgresql")
+
 
 tasks.register<Test>("unitTest") {
 	description = "Runs unit tests."
