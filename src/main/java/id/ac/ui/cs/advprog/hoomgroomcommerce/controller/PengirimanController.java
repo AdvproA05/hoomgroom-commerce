@@ -1,12 +1,21 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.controller;
 
-import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Pengiriman;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.service.PengirimanService;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Transportation;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Pengiriman;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.enums.PengirimanState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/pengiriman")
@@ -15,30 +24,33 @@ public class PengirimanController {
     @Autowired
     private PengirimanService pengirimanService;
 
-    @PutMapping("/updateStatus/{id}/{newStatus}")
-    public void updateStatusPengiriman(@PathVariable("id") String id, @PathVariable("newStatus") String newStatus) {
-        switch (newStatus.toUpperCase()) {
-            case "DIPROSES":
-                pengirimanService.proses(id);
-                break;
-            case "DIKIRIM":
-                pengirimanService.kirim(id);
-                break;
-            case "DITERIMA":
-                pengirimanService.terima(id);
-                break;
-            default:
-                throw new IllegalArgumentException("Status pengiriman tidak valid: " + newStatus);
-        }
+    @PostMapping
+    public Pengiriman creatPengiriman(@RequestBody Pengiriman pengiriman) {
+        return pengirimanService.createPengiriman(pengiriman);
     }
 
-    @PutMapping("/jenisTransportasi/{id}")
-    public void jenisTransportasi(@PathVariable("id") String id) {
-        pengirimanService.jenisTransportasi(id);
+    @GetMapping
+    public List<Pengiriman> getAllPengiriman() {
+        return pengirimanService.findAllPengiriman();
     }
 
-    @PutMapping("/finalisasiPesanan/{pengirimanId}")
-    public void finalisasiPesanan(@PathVariable("pengirimanId") String pengirimanId) {
-        pengirimanService.finalisasiPesanan(pengirimanId);
+    @GetMapping("/{kodeResi}")
+    public Pengiriman getPengirimanByKodeResi(@PathVariable String kodeResi){
+        return pengirimanService.findByKodeResi(kodeResi);
+    }
+
+    @PutMapping("/{kodeResi}/state")
+    public CompletableFuture<Pengiriman> updatePengirimanState(@PathVariable String kodeResi, @RequestBody PengirimanState newState){
+        return pengirimanService.updateStatusAsync(kodeResi, newState);
+    }
+
+    @PutMapping("/{kodeResi}/{transportation}")
+    public Pengiriman updatePengirimanTransportation(@PathVariable String kodeResi, @RequestBody Transportation newTransportation) {
+        return pengirimanService.updateTransportation(kodeResi, newTransportation);
+    }
+
+    @DeleteMapping("/{kodeResi}")
+    public void deletePengiriman(@PathVariable String kodeResi) {
+        pengirimanService.deletePengiriman(kodeResi);
     }
 }

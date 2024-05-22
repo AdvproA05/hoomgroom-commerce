@@ -1,17 +1,18 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.service;
 
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Pengiriman;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanState;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.enums.PengirimanState;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Transportation;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface PengirimanService {
-    void simpanPengiriman(Pengiriman pengiriman);
-    PengirimanState getStatus();
-    void setStatus(PengirimanState statusPengiriman);
-    String getId();
-    String getKodeResi();
-    void proses(String id);
-    void kirim(String id);
-    void terima(String id);
-    void jenisTransportasi(String id);
-    void finalisasiPesanan(String pengirimanId);
+    Pengiriman createPengiriman(Pengiriman pengiriman);
+    List<Pengiriman> findAllPengiriman();
+    Pengiriman findByKodeResi(String kodeResi);
+    CompletableFuture<Pengiriman> updateStatusAsync(String kodeResi, PengirimanState newState);
+    Pengiriman updateTransportation(String kodeResi, Transportation newTransportation);
+    Pengiriman deletePengiriman(String KodeResi);
+
 }
