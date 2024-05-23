@@ -9,7 +9,7 @@ public enum PengirimanState {
 
     private final String state;
 
-    private PengirimanState(String status){
-        this.state = status;
+    private PengirimanState(String state){
+        this.state = state;
     }
 }
