@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 
 @Entity
@@ -24,7 +25,12 @@ public class Product {
     private ProductState productState;
 
     @ElementCollection
-    private ArrayList<String> productType = new ArrayList<>();
+    private Set<String> productType = new HashSet<>();
+
+    // Default constructor
+    public Product() {
+        this.productState = new AvailableState(); // Initialize productState as AvailableState
+    }
 
     public boolean checkAvailability() {
         return this.productState.checkAvailability();
@@ -34,4 +40,3 @@ public class Product {
         return productState.printState();
     }
 }
-
