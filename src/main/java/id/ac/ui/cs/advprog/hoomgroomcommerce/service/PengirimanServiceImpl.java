@@ -1,68 +1,69 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.service;
 
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Pengiriman;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanState;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.enums.PengirimanState;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.PengirimanRepository;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanDiprosesState;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanDikirimState;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.model.PengirimanDiterimaState;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Transportation;
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PengirimanServiceImpl implements PengirimanService {
-    private Pengiriman pengiriman;
 
+    private final PengirimanRepository pengirimanRepository;
+
+    @Autowired
     public PengirimanServiceImpl(PengirimanRepository pengirimanRepository) {
-        this.pengiriman = new Pengiriman();
+        this.pengirimanRepository = pengirimanRepository;
     }
 
     @Override
-    public void simpanPengiriman(Pengiriman pengiriman) {
-        this.pengiriman = pengiriman;
+    public Pengiriman createPengiriman(Pengiriman pengiriman) {
+        return pengirimanRepository.save(pengiriman);
     }
 
     @Override
-    public PengirimanState getStatus() {
-        return pengiriman.getState();
+    public List<Pengiriman> findAllPengiriman() {
+        return pengirimanRepository.findAll();
+    }
+
+
+    @Override
+    public Pengiriman findByKodeResi(String kodeResi) {
+        return pengirimanRepository.findByKodeResi(kodeResi);
     }
 
     @Override
-    public void setStatus(PengirimanState statusPengiriman) {
-        pengiriman.setState(statusPengiriman);
+    @Async 
+    public CompletableFuture<Pengiriman> updateStatusAsync(String kodeResi, PengirimanState newState) {
+        Pengiriman pengiriman = pengirimanRepository.findByKodeResi(kodeResi);
+        if (pengiriman != null) {
+            pengiriman.setState(newState);
+            pengirimanRepository.save(pengiriman);
+        }
+        return CompletableFuture.completedFuture(pengiriman);
     }
 
     @Override
-    public String getId() {
-        return pengiriman.getId();
+    public Pengiriman updateTransportation(String kodeResi, Transportation newTransportation) {
+        Pengiriman pengiriman = pengirimanRepository.findByKodeResi(kodeResi);
+        if (pengiriman != null && pengiriman.getState() == PengirimanState.DIPROSES) {
+            pengiriman.setTransportasi(newTransportation);
+            return pengirimanRepository.save(pengiriman);
+        }
+        return null;
     }
 
     @Override
-    public String getKodeResi() {
-        return pengiriman.getKodeResi();
-    }
-
-    @Override
-    public void proses(String id) {
-        pengiriman.setState(new PengirimanDiprosesState());
-    }
-
-    @Override
-    public void kirim(String id) {
-        pengiriman.setState(new PengirimanDikirimState());
-    }
-
-    @Override
-    public void terima(String id) {
-        pengiriman.setState(new PengirimanDiterimaState());
-    }
-
-    @Override
-    public void jenisTransportasi(String id) {
-        // implementasi detail
-    }
-
-    @Override
-    public void finalisasiPesanan(String pengirimanId) {
-        // implementasi detail
+    public Pengiriman deletePengiriman(String kodeResi) {
+        if (pengirimanRepository.deleteByKodeResi(kodeResi)) {
+            return new Pengiriman(kodeResi);
+        }
+        return null;
     }
 }
