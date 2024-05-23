@@ -1,7 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.controller;
 
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Product;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.service.ProductService;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,28 +17,14 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Product;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.ProductRepository;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.service.ProductService;
-import id.ac.ui.cs.advprog.hoomgroomcommerce.service.SearchStrategy;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 class ProductControllerTest {
     private MockMvc mockMvc;
@@ -103,96 +89,155 @@ class ProductControllerTest {
     }
 
     @Test
-    public void testGetProduct() throws Exception {
+    public void testGetProduct()  {
         UUID productId = UUID.randomUUID();
         Product product = new Product();
+        product.setProductId(productId);
 
         when(productService.findById(productId)).thenReturn(product);
-        MockHttpServletResponse response = mockMvc.perform(get("/products/" + productId.toString())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+
+        CompletableFuture<ResponseEntity<Product>> response = productController.getProduct(productId);
+
+        try {
+            assertEquals(HttpStatus.OK, response.get().getStatusCode());
+            assertEquals(product, response.get().getBody());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findById(productId);
     }
 
     @Test
-    public void testGetAllProducts() throws Exception {
-        List<Product> products = Collections.singletonList(new Product());
+    void testGetAllProduct() {
+        List<Product> products = Arrays.asList(new Product(), new Product());
+
         when(productService.findAll()).thenReturn(products);
-        MockHttpServletResponse response = mockMvc.perform(get("/products/AllProduct")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getAllProduct();
+
+        try {
+            assertEquals(HttpStatus.OK, response.get().getStatusCode());
+            assertEquals(products, response.get().getBody());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findAll();
     }
 
     @Test
-    public void testGetByDiscountProduct() throws Exception {
-        List<Product> products = Collections.singletonList(new Product());
-        when(productService.findByFilter(any(SearchStrategy.class))).thenReturn(products);
-        MockHttpServletResponse response = mockMvc.perform(get("/products/AllDiscountProduct")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+    public void testGetByDiscountProduct() {
+        List<Product> products = Arrays.asList(new Product(), new Product());
+
+        SearchStrategy strategy = new DiscountSearchStrategy(productRepository);
+        when(productService.findByFilter(any(DiscountSearchStrategy.class))).thenAnswer(i -> products);
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByDiscountProduct();
+
+        try {
+            Thread.sleep(1000);
+            assertEquals(HttpStatus.OK, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
     }
 
     @Test
-    public void testGetByKeywordProduct() throws Exception {
-        String keyword = "keyword";
-        List<Product> products = Collections.singletonList(new Product());
-        when(productService.findByFilter(any())).thenReturn(products);
+    public void testGetByKeywordProduct() {
+        String keyword = "example";
+        List<Product> products = Arrays.asList(new Product(), new Product());
 
-        MockHttpServletResponse response = mockMvc.perform(get("/products/AllKeywordProduct")
-                        .param("keyword", keyword)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
+        SearchStrategy strategy = new KeywordSearchStrategy(productRepository, keyword);
+        when(productService.findByFilter(strategy)).thenAnswer(i -> CompletableFuture.completedFuture(products));
 
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByKeywordProduct(keyword);
 
+        try {
+            assertEquals(HttpStatus.OK, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
     }
 
     @Test
-    public void testGetByMaxPriceProduct() throws Exception {
-        Double max = 100.0;
-        List<Product> products = Collections.singletonList(new Product());
-        when(productService.findByFilter(any(SearchStrategy.class))).thenReturn(products);
-        MockHttpServletResponse response = mockMvc.perform(get("/products/AllMaxProduct?max=" + max)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+    public void testGetByMaxPriceProduct()  {
+        double max = 100.0;
+        List<Product> products = Arrays.asList(new Product(), new Product());
+
+        SearchStrategy strategy = new PriceMaxSearchStrategy(productRepository, max);
+        when(productService.findByFilter(strategy)).thenAnswer(i -> CompletableFuture.completedFuture(products));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByMaxPriceProduct(max);
+
+        try {
+            assertEquals(HttpStatus.OK, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
     }
 
     @Test
-    public void testGetByMinPriceProduct() throws Exception {
-        Double min = 50.0;
-        List<Product> products = Collections.singletonList(new Product());
-        when(productService.findByFilter(any(SearchStrategy.class))).thenReturn(products);
-        MockHttpServletResponse response = mockMvc.perform(get("/products/AllMinProduct?min=" + min)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+    public void testGetByMinPriceProduct()  {
+        double min = 10.0;
+        List<Product> products = Arrays.asList(new Product(), new Product());
+
+        SearchStrategy strategy = new PriceMinSearchStrategy(productRepository, min);
+        when(productService.findByFilter(strategy)).thenAnswer(i -> CompletableFuture.completedFuture(products));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByMinPriceProduct(min);
+
+        try {
+            assertEquals(HttpStatus.OK, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
     }
 
     @Test
-    public void testGetByRangePriceProduct() throws Exception {
-        Double min = 50.0;
-        Double max = 100.0;
-        List<Product> products = Collections.singletonList(new Product());
-        when(productService.findByFilter(any(SearchStrategy.class))).thenReturn(products);
-        MockHttpServletResponse response = mockMvc.perform(get("/products/AllRangeProduct?min=" + min + "&max=" + max)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+    public void testGetByRangePriceProduct() {
+        double min = 10.0;
+        double max = 100.0;
+        List<Product> products = Arrays.asList(new Product(), new Product());
+
+        SearchStrategy strategy = new PriceRangeSearchStrategy(productRepository, min, max);
+        when(productService.findByFilter(strategy)).thenAnswer(i -> CompletableFuture.completedFuture(products));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByRangePriceProduct(min, max);
+
+        try {
+            assertEquals(HttpStatus.OK, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
     }
 
     @Test
-    public void testGetByProductType() throws Exception {
-        ArrayList<String> types = new ArrayList<>();
-        types.add("Types");
-        List<Product> products = Collections.singletonList(new Product());
-        when(productService.findByFilter(any(SearchStrategy.class))).thenReturn(products);
-        MockHttpServletResponse response = mockMvc.perform(get("/products/AlProductType")
-                        .param("types", types.get(0))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+    public void testGetByProductType()  {
+        ArrayList<String> types = new ArrayList<>(Arrays.asList("type1", "type2"));
+        List<Product> products = Arrays.asList(new Product(), new Product());
+
+        SearchStrategy strategy = new ProductTypeSearchStrategy(productRepository, types);
+        when(productService.findByFilter(strategy)).thenAnswer(i -> CompletableFuture.completedFuture(products));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByProductType(types);
+
+        try {
+            assertEquals(HttpStatus.OK, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
     }
 }
