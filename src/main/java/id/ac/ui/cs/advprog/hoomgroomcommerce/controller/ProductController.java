@@ -1,16 +1,22 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Product;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.ProductRepository;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +36,16 @@ public class ProductController {
 
 
     @Async
-    @PostMapping
-    public CompletableFuture<ResponseEntity<Product>> createProduct(@RequestBody Product product) {
-        Product createdProduct = service.createProduct(product);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CompletableFuture<ResponseEntity<Product>> createProduct(@RequestPart("product") String productStr, @RequestPart("file") MultipartFile file) throws IOException, JsonProcessingException {
+        Product product = new ObjectMapper().readValue(productStr, Product.class);
+        Product createdProduct = service.createProduct(product, file);
         return CompletableFuture.completedFuture(new ResponseEntity<>(createdProduct, HttpStatus.CREATED));
     }
 
     @Async
     @PutMapping("/{id}")
-    public CompletableFuture<ResponseEntity<Product>> updateProduct(@PathVariable UUID id, @RequestBody Product product) {
+    public CompletableFuture<ResponseEntity<Product>> updateProduct(@PathVariable UUID id, @RequestBody Product product, @RequestParam("file") MultipartFile file) {
         Product existingProduct = service.findById(id);
         if (existingProduct == null) {
             return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -48,7 +55,7 @@ public class ProductController {
         existingProduct.setProductImage(product.getProductImage());
         existingProduct.setProductPrice(product.getProductPrice());
         existingProduct.setProductDiscountPrice(product.getProductDiscountPrice());
-        Product updatedProduct = service.editProduct(existingProduct);
+        Product updatedProduct = service.editProduct(existingProduct, file);
         return CompletableFuture.completedFuture(new ResponseEntity<>(updatedProduct, HttpStatus.OK));
     }
 
@@ -59,7 +66,7 @@ public class ProductController {
         return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
-    @Async
+
     @GetMapping("/{id}")
     public CompletableFuture<ResponseEntity<Product>> getProduct(@PathVariable UUID id) {
         return CompletableFuture.completedFuture(
@@ -71,7 +78,7 @@ public class ProductController {
     }
 
 
-    @Async
+
     @GetMapping("/AllProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getAllProduct() {
         return CompletableFuture.completedFuture(
@@ -82,7 +89,7 @@ public class ProductController {
         });
     }
 
-    @Async
+
     @GetMapping("/AllDiscountProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByDiscountProduct() {
         try {
@@ -96,7 +103,7 @@ public class ProductController {
         }
     }
 
-    @Async
+
     @GetMapping("/AllKeywordProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByKeywordProduct(@RequestParam(required = true) String keyword){
         try {
@@ -110,7 +117,7 @@ public class ProductController {
     }
 
 
-    @Async
+
     @GetMapping("/AllMaxProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByMaxPriceProduct(@RequestParam(required = true) Double max){
         try {
@@ -123,7 +130,7 @@ public class ProductController {
         }
     }
 
-    @Async
+
     @GetMapping("/AllMinProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByMinPriceProduct(@RequestParam(required = true) Double min){
         try {
@@ -136,7 +143,7 @@ public class ProductController {
         }
     }
 
-    @Async
+
     @GetMapping("/AllRangeProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByRangePriceProduct(@RequestParam(required = true) Double min, @RequestParam(required = true) Double max) {
         try {
@@ -150,8 +157,8 @@ public class ProductController {
     }
 
 
-    @Async
-    @GetMapping("/AlProductType")
+
+    @GetMapping("/AllProductType")
     public CompletableFuture<ResponseEntity<List<Product>>> getByProductType(@RequestParam(required = true) ArrayList<String> types){
         try {
             SearchStrategy strategy = new ProductTypeSearchStrategy(productRepository, types);

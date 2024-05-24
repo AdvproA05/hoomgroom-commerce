@@ -36,6 +36,7 @@ dependencies {
 	implementation("org.postgresql:postgresql:42.2.5")
 	implementation("io.micrometer:micrometer-registry-prometheus")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("com.cloudinary:cloudinary-http44:1.21.0")
 }
 
 tasks.register<Test>("unitTest") {

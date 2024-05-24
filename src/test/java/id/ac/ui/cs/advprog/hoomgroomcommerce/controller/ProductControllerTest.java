@@ -7,8 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -43,35 +49,31 @@ class ProductControllerTest {
     }
 
     @Test
-    void testCreateProduct() {
+    void testCreateProduct() throws Exception {
         Product product = new Product();
-        when(productService.createProduct(product)).thenReturn(product);
+        MultipartFile file = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
 
-        CompletableFuture<ResponseEntity<Product>> response = productController.createProduct(product);
+        when(productService.createProduct(any(Product.class), any(MultipartFile.class))).thenReturn(product);
 
-        try{
+        CompletableFuture<ResponseEntity<Product>> response = productController.createProduct(product, file);
+
         assertEquals(HttpStatus.CREATED, response.get().getStatusCode());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        verify(productService, times(1)).createProduct(product);
+        verify(productService, times(1)).createProduct(any(Product.class), any(MultipartFile.class));
     }
 
     @Test
-    void testUpdateProduct() {
+    void testUpdateProduct() throws Exception {
         UUID id = UUID.randomUUID();
         Product product = new Product();
+        MultipartFile file = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
+
         when(productService.findById(id)).thenReturn(product);
-        when(productService.editProduct(product)).thenReturn(product);
+        when(productService.editProduct(any(Product.class), any(MultipartFile.class))).thenReturn(product);
 
-        CompletableFuture<ResponseEntity<Product>> response = productController.updateProduct(id, product);
+        CompletableFuture<ResponseEntity<Product>> response = productController.updateProduct(id, product, file);
 
-        try{
         assertEquals(HttpStatus.OK, response.get().getStatusCode());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        verify(productService, times(1)).editProduct(product);
+        verify(productService, times(1)).editProduct(any(Product.class), any(MultipartFile.class));
     }
 
     @Test
