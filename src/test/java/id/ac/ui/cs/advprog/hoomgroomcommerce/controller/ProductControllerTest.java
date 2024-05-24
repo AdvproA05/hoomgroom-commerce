@@ -53,13 +53,18 @@ class ProductControllerTest {
         Product product = new Product();
         MultipartFile file = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
 
+        // Convert Product object to JSON String
+        ObjectMapper objectMapper = new ObjectMapper();
+        String productJson = objectMapper.writeValueAsString(product);
+
         when(productService.createProduct(any(Product.class), any(MultipartFile.class))).thenReturn(product);
 
-        CompletableFuture<ResponseEntity<Product>> response = productController.createProduct(product, file);
+        CompletableFuture<ResponseEntity<Product>> response = productController.createProduct(productJson, file);
 
         assertEquals(HttpStatus.CREATED, response.get().getStatusCode());
         verify(productService, times(1)).createProduct(any(Product.class), any(MultipartFile.class));
     }
+
 
     @Test
     void testUpdateProduct() throws Exception {
