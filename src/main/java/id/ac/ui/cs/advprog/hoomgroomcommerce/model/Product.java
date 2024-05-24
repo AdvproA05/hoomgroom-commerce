@@ -2,7 +2,6 @@ package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
 
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -19,15 +18,6 @@ public class Product {
     private int productQuantity;
     private Double productPrice;
     private Double productDiscountPrice;
-    private ProductState productState;
     private ArrayList<String> productType = new ArrayList<>();
-
-    public boolean checkAvailability() {
-        return this.productState.checkAvailability();
-    }
-
-    public String printState() {
-        return productState.printState();
-    }
 }
 
