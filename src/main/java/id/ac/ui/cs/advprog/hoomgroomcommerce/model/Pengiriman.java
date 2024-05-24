@@ -4,7 +4,7 @@ package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
 import java.util.UUID;
 import java.util.List;
 
-import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Product;
+
 import id.ac.ui.cs.advprog.hoomgroomcommerce.enums.PengirimanState;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.authentication.model.User;
 
