@@ -1,5 +1,5 @@
 # hoomgroom-commerce
-HoomGroom-Commerce adalah bagian dari repository backend untuk aplikasi HoomGroom. Database yang digunakan adalah PostgreSQL. Repo ini bertanggung jawab untuk mengimplementasikan tiga fitur utama: Mengelola Perabotan dan Peralatan Rumah, Membeli Produk, dan Memantau Pengiriman Perabotan.
+HoomGroom-Commerce adalah bagian dari repository backend untuk aplikasi HoomGroom. Database yang digunakan adalah PostgreSQL. Repo ini bertanggung jawab untuk mengimplementasikan tiga fitur utama: Mengelola Perabotan dan Peralatan Rumah dan Memantau Pengiriman Perabotan.
 
 ## Kelompok A-5 👨‍💻
 > [Virgillia Yeala Prabowo](https://github.com/VirgilliaYeala) `(2206829856)` <br>
