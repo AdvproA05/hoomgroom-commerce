@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 
@@ -23,10 +24,10 @@ public class ProductTest {
         this.product.setProductName("Sofa Fabric");
         this.product.setProductDescription("This is a comfortable sofa made of high-quality fabric.");
         this.product.setProductImage("https://example.com/sofa_fabric_image.jpg");
-        this.product.setProductQuantity(50);
+        this.product.setProductQuantity(50L);
         this.product.setProductPrice(50000.0);
         this.product.setProductDiscountPrice(40000.0);
-        ArrayList<String> types = new ArrayList<>();
+        HashSet<String> types = new HashSet<>();
         types.add("Furniture");
         types.add("Living Room");
         product.setProductType(types);

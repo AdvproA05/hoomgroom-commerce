@@ -3,6 +3,15 @@ plugins {
     jacoco
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
+	id("org.sonarqube") version "4.4.1.3373"
+}
+
+sonar {
+	properties {
+		property("sonar.projectKey", "HoomGroomA-5_hoomgroom-commerce")
+		property("sonar.organization", "hoomies2023")
+		property("sonar.host.url", "https://sonarcloud.io")
+	}
 }
 
 group = "id.ac.ui.cs.advprog"
@@ -23,21 +32,29 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	testImplementation("com.h2database:h2")
-	testImplementation("org.testcontainers:postgresql")
-	implementation("org.postgresql:postgresql:42.2.5")
-	implementation("io.micrometer:micrometer-registry-prometheus")
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("com.cloudinary:cloudinary-http44:1.21.0")
+    implementation("org.postgresql:postgresql")
+    testImplementation("org.springframework.security:spring-security-test")
+    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    testImplementation("com.h2database:h2")
+    testImplementation("org.testcontainers:postgresql")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("com.cloudinary:cloudinary-http44:1.21.0")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
+    implementation("org.springframework.boot:spring-boot-starter-security")
 }
+
+
 
 tasks.register<Test>("unitTest") {
 	description = "Runs unit tests."
