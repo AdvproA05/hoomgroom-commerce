@@ -9,5 +9,5 @@ public interface ProductService {
     List<Product> findAll();
     Product findById(UUID productId);
     Product editProduct(Product editedProduct);
-    void deleteProduct(UUID productId);
+    Product deleteProduct(UUID productId);
 }
