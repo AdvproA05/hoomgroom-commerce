@@ -1,4 +1,5 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
+import jakarta.persistence.*;
 
 
 import java.util.ArrayList;
