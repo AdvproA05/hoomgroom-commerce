@@ -9,7 +9,6 @@ import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Pengiriman;
 @Repository
 public interface PengirimanRepository extends JpaRepository<Pengiriman, String> {
     Pengiriman findByKodeResi(String kodeResi);
-    boolean edit(Pengiriman updatedPengiriman);
     boolean deleteByKodeResi(String kodeResi);
 }
 

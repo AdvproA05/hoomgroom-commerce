@@ -41,7 +41,7 @@ public class Pengiriman {
     private List<Product> productList;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "userId")
     private User user;
 
     public Pengiriman (String kodeResi){
