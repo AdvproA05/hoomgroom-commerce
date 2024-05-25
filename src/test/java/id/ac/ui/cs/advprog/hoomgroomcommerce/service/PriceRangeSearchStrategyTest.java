@@ -10,9 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,13 +39,13 @@ public class PriceRangeSearchStrategyTest {
         product.setProductName(productName);
         product.setProductDescription(productDescription);
         product.setProductImage(productImage);
-        product.setProductQuantity(productQuantity);
+        product.setProductQuantity((long) productQuantity);
         product.setProductPrice(productPrice);
         product.setProductDiscountPrice(productDiscountPrice);
-        ArrayList<String> types = new ArrayList<>();
+        HashSet<String> types = new HashSet<>();
         types.add("Furniture");
         types.add("Living Room");
-        product.setProductType(types);
+        product.setProductType((Set<String>) types);
         product.setProductState(new AvailableState());
         return product;
     }

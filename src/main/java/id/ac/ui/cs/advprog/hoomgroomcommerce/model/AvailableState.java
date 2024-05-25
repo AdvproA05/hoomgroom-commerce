@@ -1,7 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
 import lombok.Getter;
+@Getter
 public class AvailableState implements ProductState{
-    @Getter
     private String state = "Available";
 
     @Override
