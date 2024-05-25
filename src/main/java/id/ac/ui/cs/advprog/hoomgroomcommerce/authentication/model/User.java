@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import jakarta.persistence.*;
 
+@Entity
 @Getter @Setter
 public class User {
 
