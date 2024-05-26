@@ -9,7 +9,7 @@ plugins {
 sonar {
 	properties {
 		property("sonar.projectKey", "HoomGroomA-5_hoomgroom-commerce")
-		property("sonar.organization", "hoomies2023")
+		property("sonar.organization", "hoomies2022")
 		property("sonar.host.url", "https://sonarcloud.io")
 	}
 }
