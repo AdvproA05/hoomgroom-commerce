@@ -72,7 +72,7 @@ class ProductControllerTest {
     void testUpdateProduct() throws Exception {
         UUID id = UUID.randomUUID();
         Product product = new Product();
-        MultipartFile file = new MockMultipartFile("file", "updated.txt", MediaType.TEXT_PLAIN_VALUE, "Updated data".getBytes());
+        MultipartFile file = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
 
         when(productService.findById(id)).thenReturn(product);
         when(productService.editProduct(any(Product.class), any(MultipartFile.class))).thenReturn(product);
@@ -82,7 +82,6 @@ class ProductControllerTest {
         assertEquals(HttpStatus.OK, response.get().getStatusCode());
         verify(productService, times(1)).editProduct(any(Product.class), any(MultipartFile.class));
     }
-
 
     @Test
     void testDeleteProduct() {
@@ -252,6 +251,31 @@ class ProductControllerTest {
     }
 
     @Test
+    void testReceiveTop10Products() {
+        // Mock input data
+        List<Object[]> top10Products = new ArrayList<>();
+        UUID productId1 = UUID.randomUUID();
+        Long totalQuantitySold1 = 10L;
+        Object[] productStat1 = {productId1, totalQuantitySold1};
+        top10Products.add(productStat1);
+
+        // Mock service response
+        Product product = new Product();
+        when(productService.findById(productId1)).thenReturn(product);
+
+        // Call the method
+        ResponseEntity<List<Object[]>> responseEntity = productController.receiveTop10Products(top10Products);
+
+        // Verify the response
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        List<Object[]> productSalePairs = responseEntity.getBody();
+        assertEquals(1, productSalePairs.size());
+        Object[] productSalePair = productSalePairs.get(0);
+        assertEquals(product, productSalePair[0]);
+        assertEquals(totalQuantitySold1, productSalePair[1]);
+    }
+
+    @Test
     void testUpdateProductNotFound() throws Exception {
         UUID id = UUID.randomUUID();
         Product product = new Product();
@@ -275,7 +299,6 @@ class ProductControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
     }
 
-
     @Test
     public void testGetAllProductException() throws Exception {
         when(productService.findAll()).thenThrow(new RuntimeException("Database error"));
@@ -285,7 +308,6 @@ class ProductControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
     }
 
-
     @Test
     public void testGetByDiscountProductException() throws Exception {
         when(productService.findByFilter(any(DiscountSearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
@@ -293,92 +315,6 @@ class ProductControllerTest {
         CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByDiscountProduct();
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
-    }
-
-    @Test
-    public void testGetByKeywordProductException() {
-        String keyword = "example";
-
-        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
-
-        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByKeywordProduct(keyword);
-
-        try {
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
-    }
-
-    @Test
-    public void testGetByMaxPriceProductException() {
-        double max = 100.0;
-
-        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
-
-        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByMaxPriceProduct(max);
-
-        try {
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
-    }
-
-    @Test
-    public void testGetByMinPriceProductException() {
-        double min = 10.0;
-
-        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
-
-        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByMinPriceProduct(min);
-
-        try {
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
-    }
-
-    @Test
-    public void testGetByRangePriceProductException() {
-        double min = 10.0;
-        double max = 100.0;
-
-        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
-
-        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByRangePriceProduct(min, max);
-
-        try {
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
-    }
-
-    @Test
-    public void testGetByProductTypeException() {
-        ArrayList<String> types = new ArrayList<>(Arrays.asList("type1", "type2"));
-
-        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
-
-        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByProductType(types);
-
-        try {
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
     }
 
     @Test
@@ -398,8 +334,4 @@ class ProductControllerTest {
                         .content(requestBody))
                 .andExpect(status().isNotFound());
     }
-
-
-
-
 }

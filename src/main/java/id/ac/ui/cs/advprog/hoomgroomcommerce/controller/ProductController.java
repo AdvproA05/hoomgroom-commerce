@@ -182,7 +182,6 @@ public class ProductController {
         });
     }
 
-    @Async
     @PostMapping("/top10")
     public ResponseEntity<List<Object[]>> receiveTop10Products(@RequestBody List<Object[]> top10Products) {
         try {
