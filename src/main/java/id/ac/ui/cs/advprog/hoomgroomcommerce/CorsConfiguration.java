@@ -14,7 +14,7 @@ public class CorsConfiguration {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000") // Allow requests from this origin
+                        .allowedOrigins("http://localhost:3000", "https://hoomgroom-frontend.vercel.app/") // Allow requests from this origin
                         .allowedMethods("GET", "POST", "PUT", "DELETE") // Allow these methods
                         .allowCredentials(true); // Allow cookies
             }
