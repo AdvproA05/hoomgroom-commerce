@@ -2,7 +2,9 @@ package id.ac.ui.cs.advprog.hoomgroomcommerce.service;
 
 import id.ac.ui.cs.advprog.hoomgroomcommerce.enums.PengirimanState;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Pengiriman;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Transportation;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.PengirimanRepository;
+import id.ac.ui.cs.advprog.hoomgroomcommerce.service.PengirimanService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.Collections;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 public class PengirimanServiceTest {
@@ -26,13 +30,24 @@ public class PengirimanServiceTest {
 
 
     @Test
-    void testCreateDelivery() {
+    void testCreatePengiriman() {
         Pengiriman pengiriman = new Pengiriman("ABC123");
         when(pengirimanRepository.save(pengiriman)).thenReturn(pengiriman);
 
         Pengiriman createdPengiriman = pengirimanServiceImpl.createPengiriman(pengiriman);
         assertNotNull(createdPengiriman);
         assertEquals("ABC123", createdPengiriman.getKodeResi());
+    }
+
+    @Test
+    void testFindAllPengiriman() {
+        Pengiriman pengiriman = new Pengiriman("ABC123");
+        when(pengirimanRepository.findAll()).thenReturn(Collections.singletonList(pengiriman));
+
+        List<Pengiriman> pengirimans = pengirimanServiceImpl.findAllPengiriman();
+        assertNotNull(pengirimans);
+        assertEquals(1, pengirimans.size());
+        assertEquals("ABC123", pengirimans.get(0).getKodeResi());
     }
 
     @Test
@@ -85,6 +100,45 @@ public class PengirimanServiceTest {
 
         assertNotNull(deletedPengiriman);
         assertEquals("ABC123", deletedPengiriman.getKodeResi());
+    }
+
+    @Test
+    void testDeleteDeliveryNonExisting() {
+        when(pengirimanRepository.deleteByKodeResi("NONEXISTING")).thenReturn(false);
+
+        Pengiriman deletedPengiriman = pengirimanServiceImpl.deletePengiriman("NONEXISTING");
+
+        assertNull(deletedPengiriman);
+    }
+
+    @Test
+    void testUpdateTransportation() {
+        String kodeResi = "ABC123";
+        Pengiriman pengiriman = new Pengiriman(kodeResi);
+        pengiriman.setState(PengirimanState.DIPROSES);
+        Transportation transportation = new Transportation("Truck");
+
+        when(pengirimanRepository.findByKodeResi(kodeResi)).thenReturn(pengiriman);
+        when(pengirimanRepository.save(pengiriman)).thenReturn(pengiriman);
+
+        Pengiriman updatedPengiriman = pengirimanServiceImpl.updateTransportation(kodeResi, transportation);
+
+        assertNotNull(updatedPengiriman);
+        assertEquals("Truck", updatedPengiriman.getTransportasi().getType());
+    }
+
+    @Test
+    void testUpdateTransportationInvalidStatus() {
+        String kodeResi = "ABC123";
+        Pengiriman pengiriman = new Pengiriman(kodeResi);
+        pengiriman.setState(PengirimanState.DIKIRIM);
+        Transportation transportation = new Transportation("Truck");
+
+        when(pengirimanRepository.findByKodeResi(kodeResi)).thenReturn(pengiriman);
+
+        Pengiriman updatedPengiriman = pengirimanServiceImpl.updateTransportation(kodeResi, transportation);
+
+        assertNull(updatedPengiriman);
     }
 
 }

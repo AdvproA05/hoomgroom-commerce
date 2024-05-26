@@ -42,6 +42,27 @@ public class PengirimanTest {
     }
 
     @Test
+    void testSetAndGetProductList() {
+        Product product1 = new Product();
+        Product product2 = new Product();
+        List<Product> prodcutList = Arrays.asList(product1, product2);
+
+        Pengiriman pengiriman = new Pengiriman("ABC123");
+        pengiriman.setProductList(prodcutList);
+
+        assertEquals(prodcutList, pengiriman.getProductList());
+    }
+
+    @Test
+    void testSetAndGetUser() {
+        User user = new User();
+        Pengiriman pengiriman = new Pengiriman("ABC123");
+        pengiriman.setUser(user);
+
+        assertEquals(user, pengiriman.getUser());
+    }
+
+    @Test
     void testDeliveryBuilder(){
         Transportation transportasi = new Transportation("Truck");
         Product product1 = new Product();
@@ -66,5 +87,41 @@ public class PengirimanTest {
 
         assertNotNull(pengiriman.getKodeResi(), "kodeResi should be set");
         assertTrue(pengiriman.getKodeResi().startsWith("HG-"), "kodeResi should start with 'HG-'");
+    }
+
+    @Test
+    void testDefaultConstructor() {
+        Pengiriman pengiriman = new Pengiriman();
+        assertNotNull(pengiriman);
+        assertNull(pengiriman.getKodeResi());
+        assertEquals(PengirimanState.MENUNGGU_VERIFIKASI, pengiriman.getState());
+        assertNull(pengiriman.getTransportasi());
+        assertNull(pengiriman.getProductList());
+        assertNull(pengiriman.getUser());
+    }
+
+    @Test
+    void testParameterizedConstructor() {
+        Pengiriman pengiriman = new Pengiriman("ABC123");
+        assertNotNull(pengiriman);
+        assertEquals("ABC123", pengiriman.getKodeResi());
+        assertEquals(PengirimanState.MENUNGGU_VERIFIKASI, pengiriman.getState());
+    }
+
+    @Test
+    void testFullParameterizedConstructor() {
+        Transportation transportation = new Transportation("Truck");
+        Product product1 = new Product();
+        Product product2 = new Product();
+        List<Product> productList = Arrays.asList(product1, product2);
+        User user = new User();
+
+        Pengiriman pengiriman = new Pengiriman(PengirimanState.DIKIRIM, transportation, productList, user);
+
+        assertNotNull(pengiriman);
+        assertEquals(PengirimanState.DIKIRIM, pengiriman.getState());
+        assertEquals(transportation, pengiriman.getTransportasi());
+        assertEquals(productList, pengiriman.getProductList());
+        assertEquals(user, pengiriman.getUser());
     }
 }

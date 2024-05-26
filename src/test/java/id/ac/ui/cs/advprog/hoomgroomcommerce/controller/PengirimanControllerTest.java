@@ -13,7 +13,9 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -53,4 +55,65 @@ class PengirimanControllerTest {
         assertEquals(pengirimans, retrievedPengirimans);
         verify(pengirimanService, times(1)).findAllPengiriman();
     }
+
+    @Test
+    void testGetPengirimanByKodeResi() {
+        Pengiriman pengiriman = new Pengiriman("123");
+        when(pengirimanService.findByKodeResi("123")).thenReturn(pengiriman);
+
+        Pengiriman retrievedPengiriman = pengirimanController.getPengirimanByKodeResi("123");
+
+        assertEquals(pengiriman, retrievedPengiriman);
+        verify(pengirimanService, times(1)).findByKodeResi("123");
+    }
+
+    @Test
+    void testGetPengirimanByKodeREsiNotFound() {
+        when(pengirimanService.findByKodeResi("123")).thenReturn(null);
+
+        Pengiriman retrievedPengiriman = pengirimanController.getPengirimanByKodeResi("123");
+
+        assertNull(retrievedPengiriman);
+        verify(pengirimanService, times(1)).findByKodeResi("123");
+    }
+
+    @Test
+    void testUpdatePengirimanState() throws Exception{
+        Pengiriman pengiriman = new Pengiriman("123");
+        pengiriman.setState(PengirimanState.MENUNGGU_VERIFIKASI);
+
+        when(pengirimanService.updateStatusAsync("123", PengirimanState.DIPROSES))
+                .thenReturn(CompletableFuture.completedFuture(pengiriman));
+
+        CompletableFuture<Pengiriman> futurePengiriman = pengirimanController.updatePengirimanState("123", PengirimanState.DIPROSES);
+        Pengiriman updatedPengiriman = futurePengiriman.get();
+
+        assertEquals(PengirimanState.MENUNGGU_VERIFIKASI, updatedPengiriman.getState());
+        verify(pengirimanService, times(1)).updateStatusAsync("123", PengirimanState.DIPROSES);
+    }
+
+    @Test
+    void testUpdatePengirimanTransportation() {
+        Transportation transportasi = new Transportation("Truck");
+        Pengiriman pengiriman = new Pengiriman("123");
+        pengiriman.setTransportasi(transportasi);
+
+        when(pengirimanService.updateTransportation("123", transportasi)).thenReturn(pengiriman);
+
+        Pengiriman updatedPengiriman = pengirimanController.updatePengirimanTransportation("123", transportasi);
+
+        assertEquals(transportasi, updatedPengiriman.getTransportasi());
+        verify(pengirimanService, times(1)).updateTransportation("123", transportasi);
+    }
+
+    @Test
+    void testDeletePengiriman() {
+        Pengiriman pengiriman = new Pengiriman("123");
+        when(pengirimanService.deletePengiriman("123")).thenReturn(pengiriman);
+
+        pengirimanController.deletePengiriman("123");
+
+        verify(pengirimanService, times(1)).deletePengiriman("123");
+    }
 }
+
