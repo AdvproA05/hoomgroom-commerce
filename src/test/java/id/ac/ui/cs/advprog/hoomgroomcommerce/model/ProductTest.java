@@ -79,7 +79,7 @@ public class ProductTest {
 
     @Test
     void testGetProductType() {
-        ArrayList<String> typesTest = new ArrayList<>();
+        HashSet<String> typesTest = new HashSet<>();
         typesTest.add("Furniture");
         typesTest.add("Living Room");
         assertEquals(typesTest, this.product.getProductType());

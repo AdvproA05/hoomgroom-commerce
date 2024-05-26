@@ -169,34 +169,4 @@ public class ProductController {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
         }
     }
-
-    @PostMapping("/top10")
-    public ResponseEntity<List<Object[]>> receiveTop10Products(@RequestBody List<Object[]> top10Products) {
-        try {
-            List<Object[]> productSalePairs = new ArrayList<>();
-
-            for (Object[] productStat : top10Products) {
-                UUID productId = (UUID) productStat[0];
-                Long totalQuantitySold = (Long) productStat[1];
-
-                // Fetch the product using the provided service method
-                Product product = service.findById(productId);
-
-                if (product != null) {
-                    // Create a pair of product and sale data
-                    productSalePairs.add(new Object[]{product, totalQuantitySold});
-                } else {
-                    // Handle the case where the product is not found
-                    return ResponseEntity.notFound().build();
-                }
-            }
-
-            return ResponseEntity.ok(productSalePairs);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-
-
 }

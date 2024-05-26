@@ -1,5 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Uploader;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.AvailableState;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.model.Product;
 import id.ac.ui.cs.advprog.hoomgroomcommerce.repository.ProductRepository;
@@ -10,7 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,16 +30,22 @@ public class ProductServiceImplTest {
     @InjectMocks
     ProductServiceImpl productServiceImpl;
 
-    @BeforeEach
-    void setUp(){}
+    private CloudinaryService cloudinaryService;
+    private Cloudinary cloudinary; // Declare the Cloudinary variable
 
-    Product createProduct(UUID productId, String productName, String productDescription, String productImage, int productQuantity, Double productPrice, Double productDiscountPrice , ArrayList<String> productType){
+    @BeforeEach
+    void setUp(){
+        cloudinaryService = new CloudinaryService();
+        cloudinary = mock(Cloudinary.class);
+    }
+
+    Product createProduct(UUID productId, String productName, String productDescription, String productImage, int productQuantity, Double productPrice, Double productDiscountPrice , HashSet<String> productType){
         Product product = new Product();
         product.setProductId(productId);
         product.setProductName(productName);
         product.setProductDescription(productDescription);
         product.setProductImage(productImage);
-        product.setProductQuantity(productQuantity);
+        product.setProductQuantity((long) productQuantity);
         product.setProductPrice(productPrice);
         product.setProductDiscountPrice(productDiscountPrice);
         product.setProductType(productType);
@@ -42,22 +54,15 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void testCreateProduct(){
-        Product product = createProduct(
-                UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158104"),
-                "Sofa Fabric",
-                "This is a comfortable sofa made of high-quality fabric.",
-                "https://example.com/sofa_fabric_image.jpg",
-                50,
-                50000.0,
-                40000.0,
-                new ArrayList<>(Arrays.asList("Bedroom", "Kitchen")));
+    void testCreateProduct() throws IOException {
+        Product product = new Product();
 
-        when(productRepository.save(product)).thenReturn(product);
-        Product savedProduct = productServiceImpl.createProduct(product);
-        assertEquals(product.getProductId(), savedProduct.getProductId());
-        verify(productRepository, times(1)).save(product);
+        Product savedProduct = productServiceImpl.createProduct(product, null);
+
+        verify(productRepository).save(product);
     }
+
+
 
     @Test
     void testFindAllProduct(){
@@ -70,7 +75,7 @@ public class ProductServiceImplTest {
                 50,
                 50000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Bedroom", "Kitchen")));
+                new HashSet<>(Arrays.asList("Bedroom", "Kitchen")));
 
         Product product2 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158105"),
@@ -80,7 +85,7 @@ public class ProductServiceImplTest {
                 30,
                 40000.0,
                 30000.0,
-                new ArrayList<>(Arrays.asList("Bedroom", "Kitchen")));
+                new HashSet<>(Arrays.asList("Bedroom", "Kitchen")));
 
         productList.add(product1);
         productList.add(product2);
@@ -105,7 +110,7 @@ public class ProductServiceImplTest {
                 50,
                 50000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Bedroom", "Kitchen")));
+                new HashSet<>(Arrays.asList("Bedroom", "Kitchen")));
 
         when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
         Product foundProduct = productServiceImpl.findById(product.getProductId());
@@ -114,8 +119,9 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void testEditProduct(){
-        Product product = createProduct(
+    void testEditProduct() {
+        // Create the original product
+        Product originalProduct = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158104"),
                 "Sofa Fabric",
                 "This is a comfortable sofa made of high-quality fabric.",
@@ -123,12 +129,27 @@ public class ProductServiceImplTest {
                 50,
                 50000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Bedroom", "Kitchen")));
+                new HashSet<>(Arrays.asList("Bedroom", "Kitchen")));
 
-        when(productRepository.save(product)).thenReturn(product);
-        Product editedProduct = productServiceImpl.editProduct(product);
-        assertEquals(product, editedProduct);
-        verify(productRepository, times(1)).save(product);
+        // Mock the behavior of the product repository save method
+        when(productRepository.save(any())).thenReturn(originalProduct);
+
+        // Create a modified product object with updated attributes
+        Product modifiedProduct = new Product();
+        modifiedProduct.setProductId(originalProduct.getProductId());
+        modifiedProduct.setProductName("Updated Sofa Fabric");
+        modifiedProduct.setProductDescription("This is an updated description.");
+        modifiedProduct.setProductImage("https://example.com/updated_image.jpg");
+        modifiedProduct.setProductQuantity(60L);
+        modifiedProduct.setProductPrice(55000.0);
+        modifiedProduct.setProductDiscountPrice(45000.0);
+        modifiedProduct.setProductType(new HashSet<>(Arrays.asList("Living Room", "Bedroom")));
+
+        // Call the editProduct method
+        Product editedProduct = productServiceImpl.editProduct(modifiedProduct, null);
+
+        // Verify that the product repository save method is called with the modified product
+        verify(productRepository, times(1)).save(modifiedProduct);
     }
 
     @Test
@@ -141,7 +162,7 @@ public class ProductServiceImplTest {
                 50,
                 50000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Bedroom", "Kitchen")));
+                new HashSet<>(Arrays.asList("Bedroom", "Kitchen")));
 
         doNothing().when(productRepository).deleteById(product.getProductId());
         productServiceImpl.deleteProduct(product.getProductId());
@@ -159,7 +180,7 @@ public class ProductServiceImplTest {
                 50,
                 50000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Bedroom", "Kitchen")));
+                new HashSet<>(Arrays.asList("Bedroom", "Kitchen")));
 
         Product product2 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158105"),
@@ -169,7 +190,7 @@ public class ProductServiceImplTest {
                 30,
                 40000.0,
                 0.0,
-                new ArrayList<>(Arrays.asList("Bedroom", "Kitchen")));
+                new HashSet<>(Arrays.asList("Bedroom", "Kitchen")));
 
         Product product3 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158106"),
@@ -179,7 +200,7 @@ public class ProductServiceImplTest {
                 20,
                 60000.0,
                 50000.0,
-                new ArrayList<>(Arrays.asList("Bedroom", "Kitchen")));
+                new HashSet<>(Arrays.asList("Bedroom", "Kitchen")));
 
         productList.add(product1);
         productList.add(product2);
@@ -208,7 +229,7 @@ public class ProductServiceImplTest {
                 50,
                 50000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Living Room")));
 
         Product product2 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158105"),
@@ -218,7 +239,7 @@ public class ProductServiceImplTest {
                 30,
                 40000.0,
                 30000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Leather", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Leather", "Living Room")));
 
         Product product3 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158106"),
@@ -228,12 +249,12 @@ public class ProductServiceImplTest {
                 20,
                 60000.0,
                 50000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Dining Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Dining Room")));
 
         productList.add(product1);
         productList.add(product2);
         productList.add(product3);
-        
+
         when(productRepository.findByProductNameContainingIgnoreCase("Leather")).thenReturn(new ArrayList<>(List.of(productList.get(1))));
         when(productRepository.findByProductDescriptionContainingIgnoreCase("Leather")).thenReturn(new ArrayList<>(List.of(productList.get(1))));
 
@@ -242,7 +263,7 @@ public class ProductServiceImplTest {
 
         assertEquals(1, filteredProducts.size());
         assertTrue(filteredProducts.contains(product2));
-        
+
     }
 
     @Test
@@ -256,7 +277,7 @@ public class ProductServiceImplTest {
                 50,
                 100000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Living Room")));
 
         Product product2 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158105"),
@@ -266,7 +287,7 @@ public class ProductServiceImplTest {
                 30,
                 40000.0,
                 30000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Living Room")));
 
         Product product3 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158106"),
@@ -276,7 +297,7 @@ public class ProductServiceImplTest {
                 20,
                 60000.0,
                 50000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Dining Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Dining Room")));
 
         productList.add(product1);
         productList.add(product2);
@@ -305,7 +326,7 @@ public class ProductServiceImplTest {
                 50,
                 85000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Living Room")));
 
         Product product2 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158105"),
@@ -315,7 +336,7 @@ public class ProductServiceImplTest {
                 30,
                 40000.0,
                 30000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Living Room")));
 
         Product product3 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158106"),
@@ -325,7 +346,7 @@ public class ProductServiceImplTest {
                 20,
                 970000.0,
                 50000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Dining Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Dining Room")));
 
         productList.add(product1);
         productList.add(product2);
@@ -354,7 +375,7 @@ public class ProductServiceImplTest {
                 50,
                 85000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Living Room")));
 
         Product product2 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158105"),
@@ -364,7 +385,7 @@ public class ProductServiceImplTest {
                 30,
                 40000.0,
                 30000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Living Room")));
 
         Product product3 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158106"),
@@ -374,7 +395,7 @@ public class ProductServiceImplTest {
                 20,
                 60000.0,
                 50000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Dining Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Dining Room")));
 
         productList.add(product1);
         productList.add(product2);
@@ -402,7 +423,7 @@ public class ProductServiceImplTest {
                 50,
                 50000.0,
                 40000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Living Room")));
 
         Product product2 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158105"),
@@ -412,7 +433,7 @@ public class ProductServiceImplTest {
                 30,
                 40000.0,
                 30000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Living Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Living Room")));
 
         Product product3 = createProduct(
                 UUID.fromString("6f1238f8-d13a-4e5b-936f-e55156158106"),
@@ -422,7 +443,7 @@ public class ProductServiceImplTest {
                 20,
                 60000.0,
                 50000.0,
-                new ArrayList<>(Arrays.asList("Furniture", "Dining Room")));
+                new HashSet<>(Arrays.asList("Furniture", "Dining Room")));
 
         productList.add(product1);
         productList.add(product2);

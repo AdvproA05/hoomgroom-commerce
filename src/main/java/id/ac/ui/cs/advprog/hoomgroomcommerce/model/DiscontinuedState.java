@@ -1,7 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomcommerce.model;
 import lombok.Getter;
+@Getter
 public class DiscontinuedState implements ProductState{
-    @Getter
     private String state = "Discontinued";
     @Override
     public boolean checkAvailability() {

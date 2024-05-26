@@ -60,6 +60,10 @@ public class ProductServiceImpl implements ProductService {
 
     private String uploadImage(MultipartFile file) {
         try {
+            if (file == null) {
+                return null; // Return null if the file is null
+            }
+
             Map uploadResult = cloudinary.getCloudinary().uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
             return uploadResult.get("url").toString();
         } catch (IOException e) {
