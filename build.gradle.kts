@@ -54,8 +54,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
 }
 
-
-
 tasks.register<Test>("unitTest") {
 	description = "Runs unit tests."
 	group = "verification"
