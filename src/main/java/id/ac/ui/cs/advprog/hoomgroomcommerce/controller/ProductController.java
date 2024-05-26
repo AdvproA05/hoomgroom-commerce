@@ -66,7 +66,7 @@ public class ProductController {
         return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
-
+    @Async
     @GetMapping("/{id}")
     public CompletableFuture<ResponseEntity<Product>> getProduct(@PathVariable UUID id) {
         return CompletableFuture.supplyAsync(() -> {
@@ -79,9 +79,7 @@ public class ProductController {
         });
     }
 
-
-
-
+    @Async
     @GetMapping("/AllProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getAllProduct() {
         return CompletableFuture.supplyAsync(() -> {
@@ -94,8 +92,7 @@ public class ProductController {
         });
     }
 
-
-
+    @Async
     @GetMapping("/AllDiscountProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByDiscountProduct() {
         return CompletableFuture.supplyAsync(() -> {
@@ -110,8 +107,7 @@ public class ProductController {
         });
     }
 
-
-
+    @Async
     @GetMapping("/AllKeywordProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByKeywordProduct(@RequestParam(required = true) String keyword) {
         return CompletableFuture.supplyAsync(() -> {
@@ -126,6 +122,7 @@ public class ProductController {
         });
     }
 
+    @Async
     @GetMapping("/AllMaxProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByMaxPriceProduct(@RequestParam(required = true) Double max) {
         return CompletableFuture.supplyAsync(() -> {
@@ -140,6 +137,7 @@ public class ProductController {
         });
     }
 
+    @Async
     @GetMapping("/AllMinProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByMinPriceProduct(@RequestParam(required = true) Double min) {
         return CompletableFuture.supplyAsync(() -> {
@@ -154,6 +152,7 @@ public class ProductController {
         });
     }
 
+    @Async
     @GetMapping("/AllRangeProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByRangePriceProduct(@RequestParam(required = true) Double min, @RequestParam(required = true) Double max) {
         return CompletableFuture.supplyAsync(() -> {
@@ -168,6 +167,7 @@ public class ProductController {
         });
     }
 
+    @Async
     @GetMapping("/AllProductType")
     public CompletableFuture<ResponseEntity<List<Product>>> getByProductType(@RequestParam(required = true) ArrayList<String> types) {
         return CompletableFuture.supplyAsync(() -> {
@@ -182,6 +182,7 @@ public class ProductController {
         });
     }
 
+    @Async
     @PostMapping("/top10")
     public ResponseEntity<List<Object[]>> receiveTop10Products(@RequestBody List<Object[]> top10Products) {
         try {
@@ -202,6 +203,4 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
 }
