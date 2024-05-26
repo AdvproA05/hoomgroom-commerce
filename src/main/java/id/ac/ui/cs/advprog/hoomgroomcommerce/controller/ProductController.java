@@ -169,7 +169,7 @@ public class ProductController {
 
     @Async
     @GetMapping("/AllProductType")
-    public CompletableFuture<ResponseEntity<List<Product>>> getByProductType(@RequestParam(required = true) ArrayList<String> types) {
+    public CompletableFuture<ResponseEntity<List<Product>>> getByProductType(@RequestParam(required = true) cd) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 SearchStrategy strategy = new ProductTypeSearchStrategy(productRepository, types);
