@@ -24,7 +24,7 @@ public class Product {
     @Convert(converter = ProductStateConverter.class)
     private ProductState productState;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> productType = new HashSet<>();
 
     // Default constructor
