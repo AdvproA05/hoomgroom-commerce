@@ -250,4 +250,156 @@ class ProductControllerTest {
 
         verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
     }
+
+    @Test
+    void testUpdateProductNotFound() throws Exception {
+        UUID id = UUID.randomUUID();
+        Product product = new Product();
+        MultipartFile file = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
+
+        when(productService.findById(id)).thenReturn(null);
+
+        CompletableFuture<ResponseEntity<Product>> response = productController.updateProduct(id, product, file);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.get().getStatusCode());
+        verify(productService, times(0)).editProduct(any(Product.class), any(MultipartFile.class));
+    }
+
+    @Test
+    public void testGetProductException() throws Exception {
+        UUID productId = UUID.randomUUID();
+        when(productService.findById(productId)).thenThrow(new RuntimeException("Database error"));
+
+        CompletableFuture<ResponseEntity<Product>> response = productController.getProduct(productId);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
+    }
+
+
+    @Test
+    public void testGetAllProductException() throws Exception {
+        when(productService.findAll()).thenThrow(new RuntimeException("Database error"));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getAllProduct();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
+    }
+
+
+    @Test
+    public void testGetByDiscountProductException() throws Exception {
+        when(productService.findByFilter(any(DiscountSearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByDiscountProduct();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
+    }
+
+    @Test
+    public void testGetByKeywordProductException() {
+        String keyword = "example";
+
+        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByKeywordProduct(keyword);
+
+        try {
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
+    }
+
+    @Test
+    public void testGetByMaxPriceProductException() {
+        double max = 100.0;
+
+        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByMaxPriceProduct(max);
+
+        try {
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
+    }
+
+    @Test
+    public void testGetByMinPriceProductException() {
+        double min = 10.0;
+
+        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByMinPriceProduct(min);
+
+        try {
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
+    }
+
+    @Test
+    public void testGetByRangePriceProductException() {
+        double min = 10.0;
+        double max = 100.0;
+
+        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByRangePriceProduct(min, max);
+
+        try {
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
+    }
+
+    @Test
+    public void testGetByProductTypeException() {
+        ArrayList<String> types = new ArrayList<>(Arrays.asList("type1", "type2"));
+
+        when(productService.findByFilter(any(SearchStrategy.class))).thenThrow(new RuntimeException("Database error"));
+
+        CompletableFuture<ResponseEntity<List<Product>>> response = productController.getByProductType(types);
+
+        try {
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.get().getStatusCode());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(productService, times(1)).findByFilter(any(SearchStrategy.class));
+    }
+
+    @Test
+    public void testReceiveTop10ProductsException() throws Exception {
+        UUID productId = UUID.randomUUID();
+        Long totalQuantitySold = 100L;
+        Object[] productStat = new Object[]{productId, totalQuantitySold};
+
+        // Mock the productService.findById method to throw an exception
+        when(productService.findById(productId)).thenThrow(new RuntimeException("Database error"));
+
+        List<Object[]> top10Products = Collections.singletonList(productStat);
+        String requestBody = "[{\"productId\":\"" + productId + "\",\"totalQuantitySold\":" + totalQuantitySold + "}]";
+
+        mockMvc.perform(post("/top10")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isNotFound());
+    }
+
+
+
+
 }

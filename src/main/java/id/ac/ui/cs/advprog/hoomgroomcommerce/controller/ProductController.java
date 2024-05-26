@@ -69,104 +69,139 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public CompletableFuture<ResponseEntity<Product>> getProduct(@PathVariable UUID id) {
-        return CompletableFuture.completedFuture(
-                ResponseEntity.ok(service.findById(id))
-        ).exceptionally(e -> {
-            logger.error("Error in getting a product: {}", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return ResponseEntity.ok(service.findById(id));
+            } catch (Exception e) {
+                logger.error("Error in getting a product: {}", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         });
     }
+
 
 
 
     @GetMapping("/AllProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getAllProduct() {
-        return CompletableFuture.completedFuture(
-                ResponseEntity.ok(service.findAll())
-        ).exceptionally(e -> {
-            logger.error("Error in getting products: {}", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return ResponseEntity.ok(service.findAll());
+            } catch (Exception e) {
+                logger.error("Error in getting products: {}", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         });
     }
 
 
+
     @GetMapping("/AllDiscountProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByDiscountProduct() {
-        try {
-            SearchStrategy strategy = new DiscountSearchStrategy(productRepository);
-            List<Product> products = service.findByFilter(strategy);
-            return CompletableFuture.completedFuture(ResponseEntity.ok(products));
-
-        } catch (Exception e) {
-            logger.error("Error in getting products by discount: {}", e);
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                SearchStrategy strategy = new DiscountSearchStrategy(productRepository);
+                List<Product> products = service.findByFilter(strategy);
+                return ResponseEntity.ok(products);
+            } catch (Exception e) {
+                logger.error("Error in getting products by discount: {}", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        });
     }
+
 
 
     @GetMapping("/AllKeywordProduct")
-    public CompletableFuture<ResponseEntity<List<Product>>> getByKeywordProduct(@RequestParam(required = true) String keyword){
-        try {
-            SearchStrategy strategy = new KeywordSearchStrategy(productRepository, keyword);
-            List<Product> products = service.findByFilter(strategy);
-            return CompletableFuture.completedFuture(ResponseEntity.ok(products));
-        } catch (Exception e){
-            logger.error("Error in getting products by keyword: {}", e);
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-        }
+    public CompletableFuture<ResponseEntity<List<Product>>> getByKeywordProduct(@RequestParam(required = true) String keyword) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                SearchStrategy strategy = new KeywordSearchStrategy(productRepository, keyword);
+                List<Product> products = service.findByFilter(strategy);
+                return ResponseEntity.ok(products);
+            } catch (Exception e) {
+                logger.error("Error in getting products by keyword: {}", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        });
     }
-
-
 
     @GetMapping("/AllMaxProduct")
-    public CompletableFuture<ResponseEntity<List<Product>>> getByMaxPriceProduct(@RequestParam(required = true) Double max){
-        try {
-            SearchStrategy strategy = new PriceMaxSearchStrategy(productRepository, max);
-            List<Product> products = service.findByFilter(strategy);
-            return CompletableFuture.completedFuture(ResponseEntity.ok(products));
-        } catch (Exception e){
-            logger.error("Error in getting products by maximum price: {}", e);
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-        }
+    public CompletableFuture<ResponseEntity<List<Product>>> getByMaxPriceProduct(@RequestParam(required = true) Double max) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                SearchStrategy strategy = new PriceMaxSearchStrategy(productRepository, max);
+                List<Product> products = service.findByFilter(strategy);
+                return ResponseEntity.ok(products);
+            } catch (Exception e) {
+                logger.error("Error in getting products by maximum price: {}", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        });
     }
-
 
     @GetMapping("/AllMinProduct")
-    public CompletableFuture<ResponseEntity<List<Product>>> getByMinPriceProduct(@RequestParam(required = true) Double min){
-        try {
-            SearchStrategy strategy = new PriceMinSearchStrategy(productRepository, min);
-            List<Product> products = service.findByFilter(strategy);
-            return CompletableFuture.completedFuture(ResponseEntity.ok(products));
-        } catch (Exception e){
-            logger.error("Error in getting products by minimum price : {}", e);
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-        }
+    public CompletableFuture<ResponseEntity<List<Product>>> getByMinPriceProduct(@RequestParam(required = true) Double min) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                SearchStrategy strategy = new PriceMinSearchStrategy(productRepository, min);
+                List<Product> products = service.findByFilter(strategy);
+                return ResponseEntity.ok(products);
+            } catch (Exception e) {
+                logger.error("Error in getting products by minimum price: {}", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        });
     }
-
 
     @GetMapping("/AllRangeProduct")
     public CompletableFuture<ResponseEntity<List<Product>>> getByRangePriceProduct(@RequestParam(required = true) Double min, @RequestParam(required = true) Double max) {
-        try {
-            SearchStrategy strategy = new PriceRangeSearchStrategy(productRepository, min, max);
-            List<Product> products = service.findByFilter(strategy);
-            return CompletableFuture.completedFuture(ResponseEntity.ok(products));
-        } catch (Exception e) {
-            logger.error("Error in getting products by price range: {}", e);
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                SearchStrategy strategy = new PriceRangeSearchStrategy(productRepository, min, max);
+                List<Product> products = service.findByFilter(strategy);
+                return ResponseEntity.ok(products);
+            } catch (Exception e) {
+                logger.error("Error in getting products by price range: {}", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        });
     }
-
-
 
     @GetMapping("/AllProductType")
-    public CompletableFuture<ResponseEntity<List<Product>>> getByProductType(@RequestParam(required = true) ArrayList<String> types){
+    public CompletableFuture<ResponseEntity<List<Product>>> getByProductType(@RequestParam(required = true) ArrayList<String> types) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                SearchStrategy strategy = new ProductTypeSearchStrategy(productRepository, types);
+                List<Product> products = service.findByFilter(strategy);
+                return ResponseEntity.ok(products);
+            } catch (Exception e) {
+                logger.error("Error in getting products by type: {}", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        });
+    }
+
+    @PostMapping("/top10")
+    public ResponseEntity<List<Object[]>> receiveTop10Products(@RequestBody List<Object[]> top10Products) {
         try {
-            SearchStrategy strategy = new ProductTypeSearchStrategy(productRepository, types);
-            List<Product> products = service.findByFilter(strategy);
-            return CompletableFuture.completedFuture(ResponseEntity.ok(products));
-        } catch (Exception e){
-            logger.error("Error in getting products by type: {}", e);
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+            List<Object[]> productSalePairs = new ArrayList<>();
+            for (Object[] productStat : top10Products) {
+                UUID productId = (UUID) productStat[0];
+                Long totalQuantitySold = (Long) productStat[1];
+                Product product = service.findById(productId);
+                if (product != null) {
+                    productSalePairs.add(new Object[]{product, totalQuantitySold});
+                } else {
+                    return ResponseEntity.notFound().build();
+                }
+            }
+            return ResponseEntity.ok(productSalePairs);
+        } catch (Exception e) {
+            logger.error("Error in processing top 10 products: {}", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+
 }
